@@ -1,0 +1,642 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "demo.cloud-castles.com/v1alpha1",
+          "kind": "Stackstorm",
+          "metadata": {
+            "name": "stackstorm-sample"
+          },
+          "spec": {
+            "dnsConfig": {},
+            "external-dns": {
+              "aws": {
+                "zoneType": "public"
+              },
+              "domainFilters": [],
+              "enabled": false,
+              "provider": "aws"
+            },
+            "image": {
+              "pullPolicy": "IfNotPresent",
+              "repository": "",
+              "tag": "{{ .Chart.AppVersion }}"
+            },
+            "ingress": {
+              "annotations": {},
+              "enabled": false,
+              "hosts": [],
+              "tls": []
+            },
+            "jobs": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "envFromSecrets": [],
+              "image": {},
+              "nodeSelector": {},
+              "preRegisterContentCommand": [],
+              "skip": [],
+              "st2clientConfig": "[credentials]\nusername = ${ST2_AUTH_USERNAME}\npassword = ${ST2_AUTH_PASSWORD}\n",
+              "tolerations": []
+            },
+            "mongodb": {
+              "arbiter": {
+                "enabled": false
+              },
+              "architecture": "replicaset",
+              "auth": {
+                "database": "st2",
+                "enabled": true,
+                "password": "XeL5Rxwj7F0Wt43tFZVTN7H8Sg5XDHmK",
+                "replicaSetKey": "82PItDpqroti5RngOA7UqbHH7c6bFUwy",
+                "rootPassword": "8fAzdnksdzPFUWm4a68EfY7nMhBPaa",
+                "username": "st2-admin"
+              },
+              "enabled": true,
+              "image": {
+                "tag": "4.0"
+              },
+              "replicaCount": 3,
+              "replicaSetName": "rs0",
+              "resources": {}
+            },
+            "rabbitmq": {
+              "auth": {
+                "erlangCookie": "8MrqQdCQ6AQ8U3MacSubHE5RqkSfvNaRHzvxuFcG",
+                "password": "9jS+w1u07NbHtZke1m+jW4Cj",
+                "username": "admin"
+              },
+              "clustering": {
+                "forceBoot": true
+              },
+              "enabled": true,
+              "extraConfiguration": "load_definitions = /app/rabbitmq-definitions.json\n",
+              "loadDefinition": {
+                "enabled": true,
+                "existingSecret": "{{ .Release.Name }}-rabbitmq-definitions"
+              },
+              "metrics": {
+                "enabled": false
+              },
+              "persistence": {
+                "enabled": true
+              },
+              "replicaCount": 3,
+              "resources": {}
+            },
+            "redis": {
+              "cluster": {
+                "slaveCount": 3
+              },
+              "enabled": true,
+              "metrics": {
+                "enabled": false
+              },
+              "networkPolicy": {
+                "enabled": false
+              },
+              "sentinel": {
+                "enabled": true,
+                "staticID": true
+              },
+              "usePassword": false
+            },
+            "serviceAccount": {
+              "create": true,
+              "serviceAccountAnnotations": {},
+              "serviceAccountName": null
+            },
+            "st2": {
+              "apikeys": null,
+              "config": "[api]\nallow_origin = '*'\n",
+              "keyvalue": null,
+              "packs": {
+                "configs": {
+                  "core.yaml": "---\n# example core pack config yaml\n"
+                },
+                "images": [],
+                "sensors": [],
+                "volumes": {
+                  "configs": {},
+                  "enabled": false,
+                  "packs": {},
+                  "virtualenvs": {}
+                }
+              },
+              "rbac": {
+                "assignments": {
+                  "st2admin.yaml": "---\nusername: st2admin\nroles:\n  - system_admin\n",
+                  "stanley.yaml": "---\nusername: stanley\nroles:\n  - admin\n"
+                },
+                "enabled": false,
+                "mappings": null,
+                "roles": {
+                  "sample.yaml": "# sample RBAC role file, see https://docs.stackstorm.com/rbac.html#defining-roles-and-permission-grants\n---\nname: \"sample\"\ndescription: \"Example Role which contains no permission grants and serves for demonstration purposes\"\n"
+                }
+              },
+              "system_user": {
+                "ssh_key_file": "/home/{{ .Values.st2.system_user.user }}/.ssh/stanley_rsa",
+                "user": "stanley"
+              },
+              "username": "st2admin"
+            },
+            "st2actionrunner": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "envFromSecrets": [],
+              "extra_volumes": [],
+              "hostAliases": [],
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "replicas": 5,
+              "resources": {
+                "requests": {
+                  "cpu": "75m",
+                  "memory": "200Mi"
+                }
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            },
+            "st2api": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "replicas": 2,
+              "resources": {
+                "requests": {
+                  "cpu": "25m",
+                  "memory": "150Mi"
+                }
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            },
+            "st2auth": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "replicas": 2,
+              "resources": {
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "85Mi"
+                }
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            },
+            "st2chatops": {
+              "affinity": {},
+              "annotations": {},
+              "enabled": false,
+              "env": {
+                "HUBOT_ADAPTER": "slack",
+                "HUBOT_SLACK_TOKEN": "xoxb-CHANGE-ME-PLEASE"
+              },
+              "hubotScriptsVolume": {},
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "resources": {
+                "requests": {
+                  "cpu": "5m",
+                  "memory": "50Mi"
+                }
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            },
+            "st2client": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "envFromSecrets": [],
+              "extra_volumes": [],
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "st2clientConfig": "[credentials]\nusername = ${ST2_AUTH_USERNAME}\npassword = ${ST2_AUTH_PASSWORD}\n",
+              "tolerations": []
+            },
+            "st2garbagecollector": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "replicas": 1,
+              "resources": {
+                "requests": {
+                  "cpu": "10m",
+                  "memory": "80Mi"
+                }
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            },
+            "st2notifier": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "replicas": 2,
+              "resources": {
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "75Mi"
+                }
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            },
+            "st2rulesengine": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "replicas": 2,
+              "resources": {
+                "requests": {
+                  "cpu": "25m",
+                  "memory": "75Mi"
+                }
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            },
+            "st2scheduler": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "replicas": 2,
+              "resources": {
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "75Mi"
+                }
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            },
+            "st2sensorcontainer": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "envFromSecrets": [],
+              "extra_volumes": [],
+              "image": {},
+              "livenessProbe": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "readinessProbe": {},
+              "resources": {
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "100Mi"
+                }
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            },
+            "st2stream": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "replicas": 2,
+              "resources": {
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "100Mi"
+                }
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            },
+            "st2timersengine": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "resources": {
+                "requests": {
+                  "cpu": "10m",
+                  "memory": "75Mi"
+                }
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            },
+            "st2web": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "extra_volumes": [],
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "replicas": 2,
+              "resources": {
+                "limits": {
+                  "memory": "100Mi"
+                },
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "25Mi"
+                }
+              },
+              "service": {
+                "annotations": {},
+                "hostname": "",
+                "type": "NodePort"
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            },
+            "st2workflowengine": {
+              "affinity": {},
+              "annotations": {},
+              "env": {},
+              "extra_volumes": [],
+              "image": {},
+              "nodeSelector": {},
+              "postStartScript": "",
+              "replicas": 2,
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "200Mi"
+                }
+              },
+              "serviceAccount": {
+                "attach": false
+              },
+              "tolerations": []
+            }
+          }
+        }
+      ]
+    capabilities: Basic Install
+    operators.operatorframework.io/builder: operator-sdk-v1.14.0+git
+    operators.operatorframework.io/project_layout: helm.sdk.operatorframework.io/v1
+  name: st2-operator.v0.0.1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - kind: Stackstorm
+      name: stackstorms.demo.cloud-castles.com
+      version: v1alpha1
+  description: CloudCastles Stackstorm operator
+  displayName: cc-st2-operator
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - namespaces
+          verbs:
+          - get
+        - apiGroups:
+          - ""
+          resources:
+          - secrets
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - events
+          verbs:
+          - create
+        - apiGroups:
+          - demo.cloud-castles.com
+          resources:
+          - stackstorms
+          - stackstorms/status
+          - stackstorms/finalizers
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          - services
+          - services/finalizers
+          - endpoints
+          - persistentvolumeclaims
+          - events
+          - configmaps
+          - secrets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - apps
+          resources:
+          - deployments
+          - daemonsets
+          - replicasets
+          - statefulsets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - authentication.k8s.io
+          resources:
+          - tokenreviews
+          verbs:
+          - create
+        - apiGroups:
+          - authorization.k8s.io
+          resources:
+          - subjectaccessreviews
+          verbs:
+          - create
+        serviceAccountName: st2-operator-controller-manager
+      deployments:
+      - name: st2-operator-controller-manager
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              control-plane: controller-manager
+          strategy: {}
+          template:
+            metadata:
+              labels:
+                control-plane: controller-manager
+            spec:
+              containers:
+              - args:
+                - --secure-listen-address=0.0.0.0:8443
+                - --upstream=http://127.0.0.1:8080/
+                - --logtostderr=true
+                - --v=10
+                image: gcr.io/kubebuilder/kube-rbac-proxy:v0.8.0
+                name: kube-rbac-proxy
+                ports:
+                - containerPort: 8443
+                  name: https
+                  protocol: TCP
+                resources: {}
+              - args:
+                - --health-probe-bind-address=:8081
+                - --metrics-bind-address=127.0.0.1:8080
+                - --leader-elect
+                - --leader-election-id=st2-operator
+                image: cloudcastles/st2-operator:v0.0.1
+                livenessProbe:
+                  httpGet:
+                    path: /healthz
+                    port: 8081
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                name: manager
+                readinessProbe:
+                  httpGet:
+                    path: /readyz
+                    port: 8081
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                resources:
+                  limits:
+                    cpu: 200m
+                    memory: 100Mi
+                  requests:
+                    cpu: 100m
+                    memory: 60Mi
+                securityContext:
+                  allowPrivilegeEscalation: false
+              securityContext:
+                runAsNonRoot: true
+              serviceAccountName: st2-operator-controller-manager
+              terminationGracePeriodSeconds: 10
+      permissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
+        - apiGroups:
+          - coordination.k8s.io
+          resources:
+          - leases
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - events
+          verbs:
+          - create
+          - patch
+        serviceAccountName: st2-operator-controller-manager
+    strategy: deployment
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - stackstorm
+  - cloud-castles
+  links:
+  - name: St2 Operator
+    url: https://st2-operator.domain
+  maintainers:
+  - email: vadim@cloud-castles.com
+    name: Vadim Romanov
+  maturity: alpha
+  provider:
+    name: CloudCastles
+  version: 0.0.1

@@ -1,0 +1,6 @@
+# Use the 'create api' subcommand to add watches to this file.
+- group: demo.cloud-castles.com
+  version: v1alpha1
+  kind: Stackstorm
+  chart: helm-charts/stackstorm-ha
+#+kubebuilder:scaffold:watch

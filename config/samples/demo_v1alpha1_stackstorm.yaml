@@ -1,0 +1,357 @@
+apiVersion: demo.cloud-castles.com/v1alpha1
+kind: Stackstorm
+metadata:
+  name: stackstorm-sample
+spec:
+  # Default values copied from <project_dir>/helm-charts/stackstorm-ha/values.yaml
+  dnsConfig: {}
+  external-dns:
+    aws:
+      zoneType: public
+    domainFilters: []
+    enabled: false
+    provider: aws
+  image:
+    pullPolicy: IfNotPresent
+    repository: ""
+    tag: '{{ .Chart.AppVersion }}'
+  ingress:
+    annotations: {}
+    enabled: false
+    hosts: []
+    tls: []
+  jobs:
+    affinity: {}
+    annotations: {}
+    env: {}
+    envFromSecrets: []
+    image: {}
+    nodeSelector: {}
+    preRegisterContentCommand: []
+    skip: []
+    st2clientConfig: |
+      [credentials]
+      username = ${ST2_AUTH_USERNAME}
+      password = ${ST2_AUTH_PASSWORD}
+    tolerations: []
+  mongodb:
+    arbiter:
+      enabled: false
+    architecture: replicaset
+    auth:
+      database: st2
+      enabled: true
+      password: XeL5Rxwj7F0Wt43tFZVTN7H8Sg5XDHmK
+      replicaSetKey: 82PItDpqroti5RngOA7UqbHH7c6bFUwy
+      rootPassword: 8fAzdnksdzPFUWm4a68EfY7nMhBPaa
+      username: st2-admin
+    enabled: true
+    image:
+      tag: "4.0"
+    replicaCount: 3
+    replicaSetName: rs0
+    resources: {}
+  rabbitmq:
+    auth:
+      erlangCookie: 8MrqQdCQ6AQ8U3MacSubHE5RqkSfvNaRHzvxuFcG
+      password: 9jS+w1u07NbHtZke1m+jW4Cj
+      username: admin
+    clustering:
+      forceBoot: true
+    enabled: true
+    extraConfiguration: |
+      load_definitions = /app/rabbitmq-definitions.json
+    loadDefinition:
+      enabled: true
+      existingSecret: '{{ .Release.Name }}-rabbitmq-definitions'
+    metrics:
+      enabled: false
+    persistence:
+      enabled: true
+    replicaCount: 3
+    resources: {}
+  redis:
+    cluster:
+      slaveCount: 3
+    enabled: true
+    metrics:
+      enabled: false
+    networkPolicy:
+      enabled: false
+    sentinel:
+      enabled: true
+      staticID: true
+    usePassword: false
+  serviceAccount:
+    create: true
+    serviceAccountAnnotations: {}
+    serviceAccountName: null
+  st2:
+    apikeys: null
+    config: |
+      [api]
+      allow_origin = '*'
+    keyvalue: null
+    packs:
+      configs:
+        core.yaml: |
+          ---
+          # example core pack config yaml
+      images: []
+      sensors: []
+      volumes:
+        configs: {}
+        enabled: false
+        packs: {}
+        virtualenvs: {}
+    rbac:
+      assignments:
+        st2admin.yaml: |
+          ---
+          username: st2admin
+          roles:
+            - system_admin
+        stanley.yaml: |
+          ---
+          username: stanley
+          roles:
+            - admin
+      enabled: false
+      mappings: null
+      roles:
+        sample.yaml: |
+          # sample RBAC role file, see https://docs.stackstorm.com/rbac.html#defining-roles-and-permission-grants
+          ---
+          name: "sample"
+          description: "Example Role which contains no permission grants and serves for demonstration purposes"
+    system_user:
+      ssh_key_file: /home/{{ .Values.st2.system_user.user }}/.ssh/stanley_rsa
+      user: stanley
+    username: st2admin
+  st2actionrunner:
+    affinity: {}
+    annotations: {}
+    env: {}
+    envFromSecrets: []
+    extra_volumes: []
+    hostAliases: []
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    replicas: 5
+    resources:
+      requests:
+        cpu: 75m
+        memory: 200Mi
+    serviceAccount:
+      attach: false
+    tolerations: []
+  st2api:
+    affinity: {}
+    annotations: {}
+    env: {}
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    replicas: 2
+    resources:
+      requests:
+        cpu: 25m
+        memory: 150Mi
+    serviceAccount:
+      attach: false
+    tolerations: []
+  st2auth:
+    affinity: {}
+    annotations: {}
+    env: {}
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    replicas: 2
+    resources:
+      requests:
+        cpu: 50m
+        memory: 85Mi
+    serviceAccount:
+      attach: false
+    tolerations: []
+  st2chatops:
+    affinity: {}
+    annotations: {}
+    enabled: false
+    env:
+      HUBOT_ADAPTER: slack
+      HUBOT_SLACK_TOKEN: xoxb-CHANGE-ME-PLEASE
+    hubotScriptsVolume: {}
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    resources:
+      requests:
+        cpu: 5m
+        memory: 50Mi
+    serviceAccount:
+      attach: false
+    tolerations: []
+  st2client:
+    affinity: {}
+    annotations: {}
+    env: {}
+    envFromSecrets: []
+    extra_volumes: []
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    st2clientConfig: |
+      [credentials]
+      username = ${ST2_AUTH_USERNAME}
+      password = ${ST2_AUTH_PASSWORD}
+    tolerations: []
+  st2garbagecollector:
+    affinity: {}
+    annotations: {}
+    env: {}
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    replicas: 1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 80Mi
+    serviceAccount:
+      attach: false
+    tolerations: []
+  st2notifier:
+    affinity: {}
+    annotations: {}
+    env: {}
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    replicas: 2
+    resources:
+      requests:
+        cpu: 50m
+        memory: 75Mi
+    serviceAccount:
+      attach: false
+    tolerations: []
+  st2rulesengine:
+    affinity: {}
+    annotations: {}
+    env: {}
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    replicas: 2
+    resources:
+      requests:
+        cpu: 25m
+        memory: 75Mi
+    serviceAccount:
+      attach: false
+    tolerations: []
+  st2scheduler:
+    affinity: {}
+    annotations: {}
+    env: {}
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    replicas: 2
+    resources:
+      requests:
+        cpu: 50m
+        memory: 75Mi
+    serviceAccount:
+      attach: false
+    tolerations: []
+  st2sensorcontainer:
+    affinity: {}
+    annotations: {}
+    env: {}
+    envFromSecrets: []
+    extra_volumes: []
+    image: {}
+    livenessProbe: {}
+    nodeSelector: {}
+    postStartScript: ""
+    readinessProbe: {}
+    resources:
+      requests:
+        cpu: 50m
+        memory: 100Mi
+    serviceAccount:
+      attach: false
+    tolerations: []
+  st2stream:
+    affinity: {}
+    annotations: {}
+    env: {}
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    replicas: 2
+    resources:
+      requests:
+        cpu: 50m
+        memory: 100Mi
+    serviceAccount:
+      attach: false
+    tolerations: []
+  st2timersengine:
+    affinity: {}
+    annotations: {}
+    env: {}
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    resources:
+      requests:
+        cpu: 10m
+        memory: 75Mi
+    serviceAccount:
+      attach: false
+    tolerations: []
+  st2web:
+    affinity: {}
+    annotations: {}
+    env: {}
+    extra_volumes: []
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    replicas: 2
+    resources:
+      limits:
+        memory: 100Mi
+      requests:
+        cpu: 50m
+        memory: 25Mi
+    service:
+      annotations: {}
+      hostname: ""
+      type: NodePort
+    serviceAccount:
+      attach: false
+    tolerations: []
+  st2workflowengine:
+    affinity: {}
+    annotations: {}
+    env: {}
+    extra_volumes: []
+    image: {}
+    nodeSelector: {}
+    postStartScript: ""
+    replicas: 2
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200Mi
+    serviceAccount:
+      attach: false
+    tolerations: []
+  
+  
